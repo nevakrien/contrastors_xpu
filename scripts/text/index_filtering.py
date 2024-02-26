@@ -211,13 +211,15 @@ def embed(model, dataloader, batch_size, max_samples):
     with torch.no_grad():
         for batch in dataloader:
             ids = batch.pop("id")
-            query_inputs = {k: v.to(f"cuda:{dist.get_rank()}") for k, v in batch["query"].items()}
+            #query_inputs = {k: v.to(f"cuda:{dist.get_rank()}") for k, v in batch["query"].items()}
+            query_inputs = {k: v.to(f"xpu:{dist.get_rank()}") for k, v in batch["query"].items()}
             query = model(**query_inputs)
 
             query = mean_pooling(query, query_inputs["attention_mask"])
             normalized_query = F.normalize(query, p=2, dim=1)
 
-            answer_inputs = {k: v.to(f"cuda:{dist.get_rank()}") for k, v in batch["document"].items()}
+            #answer_inputs = {k: v.to(f"cuda:{dist.get_rank()}") for k, v in batch["document"].items()}
+            answer_inputs = {k: v.to(f"xpu:{dist.get_rank()}") for k, v in batch["document"].items()}
             answer = model(**answer_inputs)
 
             answer = mean_pooling(answer, answer_inputs["attention_mask"])
@@ -268,7 +270,8 @@ def filter_points(id2embeddings, batch_size=256):
 
 if __name__ == "__main__":
     dist.init_process_group(timeout=timedelta(minutes=60))
-    torch.cuda.set_device(dist.get_rank())
+    #torch.cuda.set_device(dist.get_rank())
+    torch.xpu.set_device(dist.get_rank())
     args = parse_args()
 
     output_dir = Path(args.output_dir)
@@ -302,7 +305,8 @@ if __name__ == "__main__":
     config = bert_config_to_gpt2_config(hf_config)
     model = (
         BertModel.from_pretrained(model_name, config=config, add_pooling_layer=False)
-        .to(f"cuda:{dist.get_rank()}")
+        #.to(f"cuda:{dist.get_rank()}")
+        .to(f"xpu:{dist.get_rank()}")
         .to(dtype=torch.float16)
     )
 
@@ -336,7 +340,8 @@ if __name__ == "__main__":
         all_embeddings = send_dict_to_rank0(embeddings)
 
         if dist.get_rank() == 0:
-            torch.cuda.empty_cache()
+            #torch.cuda.empty_cache()
+            torch.xpu.empty_cache()
             all_embeddings = {k: (q.numpy(), d.numpy()) for k, (q, d) in all_embeddings.items()}
             ids_to_keep = filter_points(all_embeddings)
             print(f"keeping {len(ids_to_keep)} out of {len(all_embeddings)}")

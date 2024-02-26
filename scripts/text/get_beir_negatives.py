@@ -109,7 +109,8 @@ def knn_neighbors(query2embed, index, batch_size, k):
 
 if __name__ == "__main__":
     dist.init_process_group(timeout=timedelta(minutes=60))
-    torch.cuda.set_device(dist.get_rank())
+    #torch.cuda.set_device(dist.get_rank())
+    torch.xpu.set_device(dist.get_rank())
     args = parse_args()
 
     output_dir = Path(args.output_dir)
@@ -118,7 +119,8 @@ if __name__ == "__main__":
             output_dir.mkdir(parents=True)
 
     model_name = "thenlper/gte-base"
-    model = AutoModel.from_pretrained(model_name, torch_dtype=torch.float16).to(f"cuda:{dist.get_rank()}")
+    #model = AutoModel.from_pretrained(model_name, torch_dtype=torch.float16).to(f"cuda:{dist.get_rank()}")
+    model = AutoModel.from_pretrained(model_name, torch_dtype=torch.float16).to(f"xpu:{dist.get_rank()}")
 
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -137,7 +139,8 @@ if __name__ == "__main__":
         d_embed.append(doc2embed[id2doc[i]])
 
     del model
-    torch.cuda.empty_cache()
+    #torch.cuda.empty_cache()
+    torch.xpu.empty_cache()
 
     index = faiss.IndexFlatIP(query2embed[list(query2embed.keys())[0]].shape[0])
     co = faiss.GpuMultipleClonerOptions()
