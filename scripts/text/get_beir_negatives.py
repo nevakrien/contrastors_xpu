@@ -143,10 +143,10 @@ if __name__ == "__main__":
     torch.xpu.empty_cache()
 
     index = faiss.IndexFlatIP(query2embed[list(query2embed.keys())[0]].shape[0])
-    co = faiss.GpuMultipleClonerOptions()
-    co.shard = True
-    co.useFloat16 = True
-    index = faiss.index_cpu_to_all_gpus(index, co=co)
+    #co = faiss.GpuMultipleClonerOptions()
+    #co.shard = True
+    #co.useFloat16 = True
+    #index = faiss.index_cpu_to_all_gpus(index, co=co)
     index.add(np.array(d_embed).astype(np.float32))
 
     scores, indices = knn_neighbors(query2embed, index, args.batch_size, args.k)

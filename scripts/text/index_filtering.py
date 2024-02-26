@@ -239,11 +239,11 @@ def embed(model, dataloader, batch_size, max_samples):
 
 def filter_points(id2embeddings, batch_size=256):
     index = faiss.IndexFlatIP(len(id2embeddings[list(id2embeddings.keys())[0]][0]))
-    co = faiss.GpuMultipleClonerOptions()
-    co.shard = True
-    co.useFloat16 = True
-    print("building index")
-    index = faiss.index_cpu_to_all_gpus(index, co=co)
+    #co = faiss.GpuMultipleClonerOptions()
+    #co.shard = True
+    #co.useFloat16 = True
+    #print("building index")
+    #index = faiss.index_cpu_to_all_gpus(index, co=co)
     print("index built")
 
     id2doc_emb = {k: v[1] for k, v in id2embeddings.items()}
