@@ -13,7 +13,7 @@ torch
 transformers>=4.34.0
 einops
 sentencepiece
-deepspeed
+deepspeed==0.5.9
 wheel
 packaging
 tabulate

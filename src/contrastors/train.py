@@ -1,4 +1,9 @@
 import logging
+
+#hack
+import sys
+sys.path.append('/home/sdp/contrastors/src')
+
 from argparse import ArgumentParser
 
 import deepspeed
@@ -57,7 +62,7 @@ def main(config, dtype):
     trainer = trainer_cls(config, dtype)
     trainer.train()
 
-
+#Neva Note: going to attempt removing the deep speed part so I can manage devices manualy (ie lunch this without deepspeed)
 if __name__ == "__main__":
     args = parse_args()
 

@@ -40,10 +40,15 @@ class MLMTrainer(BaseTrainer):
         if config.gradient_checkpointing:
             model.gradient_checkpointing_enable()
 
+        print('inilizing mlm trainer')
+
         if self.distributed and not self.deepspeed:
-            model = model.to("cuda")
+            print("xpu code used")
+            #model = model.to("cuda")
+            model = model.to("xpu")
             model = torch.nn.parallel.DistributedDataParallel(
                 model,
+                #device_ids=[dist.get_rank()],
                 device_ids=[dist.get_rank()],
             )
 
