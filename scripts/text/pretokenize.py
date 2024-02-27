@@ -63,5 +63,5 @@ def group_texts(examples):
 
 
 tokenized_datasets = tokenized_datasets.map(group_texts, batched=True, num_proc=num_proc, desc="Grouping texts")
-
-tokenized_datasets.push_to_hub(args.hf_save_name, private=True)
+tokenized_datasets.save_to_disk('tokenized_data.hf')
+#tokenized_datasets.push_to_hub(args.hf_save_name, private=True)

@@ -4,6 +4,8 @@ from argparse import ArgumentParser
 import deepspeed
 import torch
 import torch.distributed as dist
+import intel_extension_for_pytorch as ipex
+#import intel_extension_for_deepspeed as intel_deep
 
 from contrastors.read import read_config
 from contrastors.trainers import TRAINER_REGISTRY
